@@ -24,7 +24,26 @@ export default function Home() {
       </header>
       
       <main className="max-w-5xl mx-auto p-8">
-        <h2 className="text-2xl font-bold">Welcome to the Dashboard</h2>
+        <h2 className="text-2xl font-bold mb-4">Welcome to the Dashboard</h2>
+        <p className="text-gray-600 text-lg mb-6">
+          FlexiSpace is your all-in-one solution for managing and customizing your workspace. 
+          Navigate to the Main Dashboard to view your data or use the Customize Table feature 
+          to tailor your tables according to your needs.
+        </p>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="p-6 bg-white rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-2">Main Dashboard</h3>
+            <p className="text-gray-600">
+              Access your comprehensive dashboard to view and manage your data in real-time.
+            </p>
+          </div>
+          <div className="p-6 bg-white rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-2">Table Customization</h3>
+            <p className="text-gray-600">
+              Personalize your tables with our intuitive customization tools.
+            </p>
+          </div>
+        </div>
       </main>
     </div>
   )
