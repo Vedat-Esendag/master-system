@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import { ChevronUp, ChevronDown } from "lucide-react"
 
 export default function CustomizeTable() {
-  const [tableHeight, setTableHeight] = useState(300)
-  const MIN_HEIGHT = 100
-  const MAX_HEIGHT = 800
+  const [tableHeight, setTableHeight] = useState(100)
+  const MIN_HEIGHT = 30
+  const MAX_HEIGHT = 200
 
   const handleHeightChange = (value: number[]) => {
     setTableHeight(value[0])
@@ -57,7 +57,7 @@ export default function CustomizeTable() {
             </Button>
           </div>
           <div className="text-center text-sm text-gray-500">
-            Height: {tableHeight}px
+            Height: {tableHeight}cm
           </div>
         </div>
       </CardContent>
