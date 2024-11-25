@@ -14,8 +14,8 @@ const DESK_ID = process.env.NEXT_PUBLIC_DESK_ID
 
 export default function CustomizeTable() {
   const [tableHeight, setTableHeight] = useState(100)
-  const MIN_HEIGHT = 30
-  const MAX_HEIGHT = 200
+  const MIN_HEIGHT = 60
+  const MAX_HEIGHT = 160
 
   const updateDeskHeight = async (heightCm: number) => {
     if (!API_KEY || !DESK_ID) {
