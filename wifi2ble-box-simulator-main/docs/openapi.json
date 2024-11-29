@@ -188,7 +188,7 @@
             "type": "object",
             "properties": {
               "name": { "type": "string", "example": "DESK 4486" },
-              "manufacturer": { "type": "string", "example": "Linak A/S" }
+              "manufacturer": { "type": "string", "example": "Desk-O-Matic Co." }
             }
           },
           "state": {

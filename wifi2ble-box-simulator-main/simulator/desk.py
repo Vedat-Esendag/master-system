@@ -2,7 +2,7 @@ import threading
 import random
 import logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class Desk:
     DEFAULT_SPEED_MMS = 32
@@ -40,7 +40,7 @@ class Desk:
         self.clock_s = 180
         self.collision_occurred = False
 
-        logging.info(f"Desk initialized: ID={desk_id}, Name={name}, Manufacturer={manufacturer}, "
+        logger.info(f"Desk initialized: ID={desk_id}, Name={name}, Manufacturer={manufacturer}, "
             f"Position={initial_position}, Min={min_position}, Max={max_position}")
 
 
@@ -53,10 +53,10 @@ class Desk:
         """Set the target position to move towards, respecting min and max limits."""
         with self.lock:
             self.target_position_mm = max(self.min_position, min(position_mm, self.max_position))
-            logging.info(f"Desk target position set: ID={self.desk_id}, Requested={position_mm}, Accepted={self.target_position_mm}")
+            logger.info(f"Desk target position set: ID={self.desk_id}, Requested={position_mm}, Accepted={self.target_position_mm}")
             if position_mm != self.state["position_mm"]:
                 self.usage["activationsCounter"] += 1
-                logging.info(f"Desk activated: ID={self.desk_id}, ActivationCounter={self.usage["activationsCounter"]}")
+                logger.info(f"Desk activated: ID={self.desk_id}, ActivationCounter={self.usage["activationsCounter"]}")
 
     def _generate_error(self):
         """Generate an error during movement."""
@@ -69,7 +69,7 @@ class Desk:
             self.state["status"] = "Collision"
             self.collision_occurred = True
 
-            logging.error(f"Desk collision detected: ID={self.desk_id}, Time={self.clock_s}, Position={self.state['position_mm']}")
+            logger.error(f"Desk collision detected: ID={self.desk_id}, Time={self.clock_s}, Position={self.state['position_mm']}")
     
     def update(self):
         """Update clock and position gradually toward target_position_mm within limits, increment sitStandCounter on crossing."""
@@ -89,27 +89,27 @@ class Desk:
                 self.state["position_mm"] = min(self.state["position_mm"], self.max_position)
                 self.state["speed_mms"] = self.DEFAULT_SPEED_MMS
                 successful_movement = True
-                logging.info(f"Desk moving up: ID={self.desk_id}, Position={self.state['position_mm']}")
+                logger.info(f"Desk moving up: ID={self.desk_id}, Position={self.state['position_mm']}")
             elif self.state["position_mm"] > self.target_position_mm:
                 self.state["position_mm"] -= min(self.DEFAULT_SPEED_MMS, self.state["position_mm"] - self.target_position_mm)
                 self.state["position_mm"] = max(self.state["position_mm"], self.min_position)
                 self.state["speed_mms"] = -self.DEFAULT_SPEED_MMS
                 successful_movement = True
-                logging.info(f"Desk moving down: ID={self.desk_id}, Position={self.state['position_mm']}")
+                logger.info(f"Desk moving down: ID={self.desk_id}, Position={self.state['position_mm']}")
             else:
                 self.state["speed_mms"] = 0
 
             if (previous_position < self.sit_stand_position <= self.state["position_mm"]) or \
                (previous_position > self.sit_stand_position >= self.state["position_mm"]):
                 self.usage["sitStandCounter"] += 1
-                logging.info(f"Desk crossed sit/stand position: ID={self.desk_id}, SitStandCounter={self.usage['sitStandCounter']}")
+                logger.info(f"Desk crossed sit/stand position: ID={self.desk_id}, SitStandCounter={self.usage['sitStandCounter']}")
 
 
             if successful_movement:
                 if self.state["isAntiCollision"]:
                     self.state["isAntiCollision"] = False
                     self.state["status"] = "Normal"
-                    logging.info(f"Desk reset from collision: ID={self.desk_id}, Time={self.clock_s}, Position={self.state['position_mm']}")
+                    logger.info(f"Desk reset from collision: ID={self.desk_id}, Time={self.clock_s}, Position={self.state['position_mm']}")
                 elif random.random() < self.COLLISION_CHANCE:
                     self._generate_error()
                     if self.state["speed_mms"] > 0:

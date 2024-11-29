@@ -1,6 +1,6 @@
 # Desk Management REST API
 
-This REST API provides access to a collection of desks, each with configurable properties and a state that includes position, speed, and other operational data. The API allows retrieving and updating desk data and is secured by API keys.
+This REST API provides access to a collection of desks, each with configurable properties and a state that includes position, speed, and other operational data. The API allows retrieving and updating desk data and is secured by API keys. **For development and testing purposes only.**
 
 ## Usage
 
@@ -32,7 +32,7 @@ python simulator/main.py --port 8443 --https --certfile config/cert.pem --keyfil
    - __--port__: (Optional) Specify the port to use for the server. The default is 8000
 
 #### 3. **Other Options**:
-To generate the minimum required amount of desks:
+**Desks:** to generate the minimum required amount of desks:
 
 ```bash
 python simulator/main.py --desks 100
@@ -40,13 +40,22 @@ python simulator/main.py --desks 100
 - Option:
    - __--desks__: Minimum number of desks to simulate (default: 2)
 
-To generate the minimum required amount of desks:
+**Speed:** To control speed of the clock simulation of the attached desks:
 
 ```bash
 python simulator/main.py --speed 60
 ```
 - Option:
    - __--speed__: Simulation speed (default: 60)
+
+**Log Level**: To control logging level of the simulator modules:
+
+```bash
+python simulator/main.py --log-level INFO
+```
+- Option:
+   - __--log-level__: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
 
 ## Data Persistence
 
@@ -98,7 +107,7 @@ Replace `<api_key>` with a valid API key from `api_keys.json`.
     {
       "config": {
         "name": "DESK 4486",
-        "manufacturer": "Linak A/S"
+        "manufacturer": "Desk-O-Matic Co."
       },
       "state": {
         "position_mm": 680,

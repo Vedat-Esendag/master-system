@@ -3,7 +3,7 @@ import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from desk_manager import DeskManager
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class SimpleRESTServer(BaseHTTPRequestHandler):
     VERSION = "v2"
@@ -21,13 +21,13 @@ class SimpleRESTServer(BaseHTTPRequestHandler):
         try:
             with open(api_keys_file, "r") as f:
                 keys = json.load(f)
-                logging.info(f"API keys successfully loaded from {api_keys_file}.")
+                logger.info(f"API keys successfully loaded from {api_keys_file}.")
                 return keys
         except FileNotFoundError:
-            logging.error(f"API keys file not found at {api_keys_file}.")
+            logger.error(f"API keys file not found at {api_keys_file}.")
             return []
         except json.JSONDecodeError as e:
-            logging.error(f"Error decoding API keys file {api_keys_file}: {e}")
+            logger.error(f"Error decoding API keys file {api_keys_file}: {e}")
             return []
 
     @classmethod
@@ -42,14 +42,14 @@ class SimpleRESTServer(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(response_body)))
         self.end_headers()
         self.wfile.write(response_body)
-        logging.info(f"Response sent: {status_code} - {data}")
+        logger.info(f"Response sent: {status_code} - {data}")
     
     def _is_valid_path(self):
         # Path format: /api/<version>/<api_key>/desks[/<desk_id>]
         self.path_parts = self.path.strip("/").split("/")
     
         if len(self.path_parts) < 4 or self.path_parts[0] != "api":
-            logging.warning(f"Invalid endpoint: {self.path}")
+            logger.warning(f"Invalid endpoint: {self.path}")
             self._send_response(400, {"error": "Invalid endpoint"})
             return False
     
@@ -57,23 +57,23 @@ class SimpleRESTServer(BaseHTTPRequestHandler):
         api_key = self.path_parts[2]
     
         if api_key not in self.API_KEYS:
-            logging.warning(f"Unauthorized API key: {api_key}")
+            logger.warning(f"Unauthorized API key: {api_key}")
             self._send_response(401, {"error": "Unauthorized"})
             return False
     
         if version != self.VERSION:
-            logging.warning(f"Invalid API version: {version}")
+            logger.warning(f"Invalid API version: {version}")
             self._send_response(400, {"error": "Invalid API version"})
             return False
         
-        logging.info(f"Valid API request: {self.path}")
+        logger.info(f"Valid API request: {self.path}")
         return True
     
     def do_GET(self):
         if not self._is_valid_path():
             return
         
-        logging.info(f"Handling GET request for {self.path}")
+        logger.info(f"Handling GET request for {self.path}")
         if self.path_parts[3] == "desks":
             if len(self.path_parts) == 4:
                 desk_ids = self.desk_manager.get_desk_ids()
@@ -84,7 +84,7 @@ class SimpleRESTServer(BaseHTTPRequestHandler):
                 if desk:
                     self._send_response(200, desk)
                 else:
-                    logging.warning(f"Desk not found: {desk_id}")
+                    logger.warning(f"Desk not found: {desk_id}")
                     self._send_response(404, {"error": "Desk not found"})
             elif len(self.path_parts) == 6:
                 desk_id = self.path_parts[4]
@@ -93,20 +93,20 @@ class SimpleRESTServer(BaseHTTPRequestHandler):
                 if data:
                     self._send_response(200, data)
                 else:
-                    logging.warning(f"Category not found: {category} for desk {desk_id}")
+                    logger.warning(f"Category not found: {category} for desk {desk_id}")
                     self._send_response(404, {"error": "Category not found"})
             else:
-                logging.warning(f"Invalid path structure for GET: {self.path}")
+                logger.warning(f"Invalid path structure for GET: {self.path}")
                 self._send_response(400, {"error": "Invalid path"})
         else:
-            logging.warning(f"Invalid endpoint for GET: {self.path}")
+            logger.warning(f"Invalid endpoint for GET: {self.path}")
             self._send_response(400, {"error": "Invalid endpoint"})
     
     def do_PUT(self):
         if not self._is_valid_path():
             return
 
-        logging.info(f"Handling PUT request for {self.path}")
+        logger.info(f"Handling PUT request for {self.path}")
         if self.path_parts[3] == "desks":
             if len(self.path_parts) == 6:
                 # Update a specific category of a specific desk
@@ -124,32 +124,32 @@ class SimpleRESTServer(BaseHTTPRequestHandler):
                         }
                         self._send_response(200, response_data)
                     else:
-                        logging.warning(f"Update failed: Category {category} or desk {desk_id} not found.")
+                        logger.warning(f"Update failed: Category {category} or desk {desk_id} not found.")
                         self._send_response(404, {"error": "Category not found or desk not found"})
                 except ValueError:
-                    logging.error(f"Invalid data format for PUT: {self.path}")
+                    logger.error(f"Invalid data format for PUT: {self.path}")
                     self._send_response(400, {"error": "Invalid data"})
                 except TypeError:
-                    logging.error(f"Invalid data type for PUT: {self.path}")
+                    logger.error(f"Invalid data type for PUT: {self.path}")
                     self._send_response(400, {"error": "Invalid type"})
             else:
-                logging.warning(f"Invalid path structure for PUT: {self.path}")
+                logger.warning(f"Invalid path structure for PUT: {self.path}")
                 self._send_response(400, {"error": "Invalid path"})
         else:
-            logging.warning(f"Invalid endpoint for PUT: {self.path}")
+            logger.warning(f"Invalid endpoint for PUT: {self.path}")
             self._send_response(400, {"error": "Invalid endpoint"})
 
     def do_POST(self):
         """Handle unsupported POST method."""
-        logging.warning(f"POST method not allowed: {self.path}")
+        logger.warning(f"POST method not allowed: {self.path}")
         self._send_response(405, {"error": "Method Not Allowed"})
     
     def do_DELETE(self):
         """Handle unsupported DELETE method."""
-        logging.warning(f"DELETE method not allowed: {self.path}")
+        logger.warning(f"DELETE method not allowed: {self.path}")
         self._send_response(405, {"error": "Method Not Allowed"})
     
     def do_PATCH(self):
         """Handle unsupported PATCH method."""
-        logging.warning(f"PATCH method not allowed: {self.path}")
+        logger.warning(f"PATCH method not allowed: {self.path}")
         self._send_response(405, {"error": "Method Not Allowed"})

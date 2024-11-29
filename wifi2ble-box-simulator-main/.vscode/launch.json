@@ -7,7 +7,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/simulator/main.py",
             "args": [
-                "--port", "8000"
+                "--port", "8000",
+                "--log-level", "INFO"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -21,7 +22,8 @@
                 "--port", "8443",
                 "--https",
                 "--certfile", "${workspaceFolder}/config/cert.pem",
-                "--keyfile", "${workspaceFolder}/config/key.pem"
+                "--keyfile", "${workspaceFolder}/config/key.pem",
+                "--log-level", "WARNING"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

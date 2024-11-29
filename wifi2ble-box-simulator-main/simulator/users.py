@@ -1,7 +1,7 @@
 from enum import Enum
 import logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class UserType(Enum):
     """Enumeration for user types."""
@@ -32,7 +32,7 @@ class SeatedUser(UserBehavior):
     
     def simulate(self, time_delta_s):
         if self.desk.state["position_mm"] > self.preffered_position:
-            logging.info(f"SeatedUser adjusting desk {self.desk.desk_id} to seated position {self.preferred_position}.")
+            logger.info(f"SeatedUser adjusting desk {self.desk.desk_id} to seated position {self.preferred_position}.")
             self.desk.set_target_position(self.preffered_position)
 
 class StandingUser(UserBehavior):
@@ -46,7 +46,7 @@ class StandingUser(UserBehavior):
 
     def simulate(self, time_delta_s):
         if self.desk.state["position_mm"] < self.preffered_position:
-            logging.info(f"StandingUser adjusting desk {self.desk.desk_id} to standing position {self.preferred_position}.")
+            logger.info(f"StandingUser adjusting desk {self.desk.desk_id} to standing position {self.preferred_position}.")
             self.desk.set_target_position(self.preffered_position)
 
 class ActiveUser(UserBehavior):
@@ -75,5 +75,5 @@ class ActiveUser(UserBehavior):
             self.next_position = (
                 self.standing_position if self.desk.state["position_mm"] <= self.seated_position else self.seated_position
             )
-            logging.info(f"ActiveUser adjusting desk {self.desk.desk_id} to {'standing' if self.next_position == self.standing_position else 'seated'} position {self.next_position}.")
+            logger.info(f"ActiveUser adjusting desk {self.desk.desk_id} to {'standing' if self.next_position == self.standing_position else 'seated'} position {self.next_position}.")
             self.desk.set_target_position(self.next_position)

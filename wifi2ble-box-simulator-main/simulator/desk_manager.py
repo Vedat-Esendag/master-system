@@ -7,7 +7,7 @@ import logging
 from desk import Desk
 from users import SeatedUser, StandingUser, ActiveUser, UserType
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class DeskManager:
     STATE_FILE = "data/desks_state.json"
@@ -38,13 +38,13 @@ class DeskManager:
         """Get a desk by its ID."""
         with self.lock:
             if desk_id in self.powered_off_desks:
-                logging.warning(f"Desk ID={desk_id} is currently powered off.")
+                logger.warning(f"Desk ID={desk_id} is currently powered off.")
                 return None
             return self.desks.get(desk_id)
 
     def get_desk_data(self, desk_id):
         """Get a desk's data snapshot by its ID."""
-        logging.debug(f"Retrieving data for desk ID={desk_id}.")
+        logger.debug(f"Retrieving data for desk ID={desk_id}.")
         desk = self.get_desk(desk_id)
         return desk.get_data() if desk else None
 
@@ -68,9 +68,9 @@ class DeskManager:
                 desk = Desk(desk_id, name, manufacturer)
                 self.desks[desk_id] = desk
                 self.users[desk_id] = self._create_user(desk, user_type)
-                logging.info(f"Desk ID={desk_id} added with user type {user_type}.")
+                logger.info(f"Desk ID={desk_id} added with user type {user_type}.")
                 return True
-            logging.warning(f"Desk ID={desk_id} already exists. Skipping addition.")
+            logger.warning(f"Desk ID={desk_id} already exists. Skipping addition.")
             return False
 
     def remove_desk(self, desk_id):
@@ -80,23 +80,23 @@ class DeskManager:
                 del self.desks[desk_id]
                 del self.users[desk_id]
                 self.powered_off_desks.pop(desk_id, None)
-                logging.info(f"Desk ID={desk_id} and user removed.")
+                logger.info(f"Desk ID={desk_id} and user removed.")
                 return True
-            logging.warning(f"Attempted to remove non-existent desk ID={desk_id}.")
+            logger.warning(f"Attempted to remove non-existent desk ID={desk_id}.")
             return False
             
     def is_daytime(self):
         """Check if the current time is during the day."""
         simulated_time_h = (self.current_time_s % self.SECONDS_PER_DAY) / 3600
         daytime = self.DAY_START_HOUR <= simulated_time_h < self.NIGHT_START_HOUR
-        logging.info(f"Daytime check: {'Day' if daytime else 'Night'} (Simulated hour: {simulated_time_h:.2f}).")
+        logger.info(f"Daytime check: {'Day' if daytime else 'Night'} (Simulated hour: {simulated_time_h:.2f}).")
         return daytime
 
     def increment_time(self):
         """Increment the simulation time by one second."""
         with self.lock:
             self.current_time_s += self.simulation_speed
-            logging.debug(f"Simulation time incremented to {self.current_time_s} seconds.")
+            logger.debug(f"Simulation time incremented to {self.current_time_s} seconds.")
 
 
     def _create_user(self, desk, user_type: UserType):
@@ -127,7 +127,7 @@ class DeskManager:
                 with self.lock:
                     for desk_id, user in self.users.items():
                         if desk_id not in self.powered_off_desks:
-                            logging.debug(f"User simulation for desk {desk_id}.")
+                            logger.debug(f"User simulation for desk {desk_id}.")
                             user.simulate(5*self.simulation_speed)
             time.sleep(5)
 
@@ -140,7 +140,7 @@ class DeskManager:
                     if desk_id not in self.powered_off_desks:
                         power_off_duration_s = random.randint(5*60, 2*60*60)
                         self.powered_off_desks[desk_id] = self.current_time_s + power_off_duration_s
-                        logging.warning(f"Desk ID={desk_id} powered off for {power_off_duration_s // 60} minutes.")
+                        logger.warning(f"Desk ID={desk_id} powered off for {power_off_duration_s // 60} minutes.")
             time.sleep(5)
 
             with self.lock:
@@ -149,7 +149,7 @@ class DeskManager:
                     if self.current_time_s >= power_on_time_s
                 ]
                 for desk_id in desks_to_restore:
-                    logging.info(f"Desk ID={desk_id} restored from power-off state.")
+                    logger.info(f"Desk ID={desk_id} restored from power-off state.")
                     del self.powered_off_desks[desk_id]
 
     def start_updates(self):
@@ -158,17 +158,17 @@ class DeskManager:
             self.stop_event.clear()
             self.update_thread = threading.Thread(target=self._update_all_desks)
             self.update_thread.start()
-            logging.info("Update thread started.")
+            logger.info("Update thread started.")
 
         if self.simulation_thread is None or not self.simulation_thread.is_alive():
             self.simulation_thread = threading.Thread(target=self._simulate_user_interactions)
             self.simulation_thread.start()
-            logging.info("User simulation thread started.")
+            logger.info("User simulation thread started.")
 
         if self.power_off_thread is None or not self.power_off_thread.is_alive():
             self.power_off_thread = threading.Thread(target=self._simulate_power_off)
             self.power_off_thread.start()
-            logging.info("Power-off simulation thread started.")
+            logger.info("Power-off simulation thread started.")
 
     def stop_updates(self):
         """Stop the update and simulation threads."""
@@ -176,13 +176,13 @@ class DeskManager:
             self.stop_event.set()
             if self.update_thread:
                 self.update_thread.join()
-                logging.info("Update thread stopped.")
+                logger.info("Update thread stopped.")
             if self.simulation_thread:
                 self.simulation_thread.join()
-                logging.info("User simulation thread stopped.")
+                logger.info("User simulation thread stopped.")
             if self.power_off_thread:
                 self.power_off_thread.join()
-                logging.info("Power-off simulation thread stopped.")
+                logger.info("Power-off simulation thread stopped.")
         self.save_state()
 
     def save_state(self):
@@ -199,7 +199,7 @@ class DeskManager:
                 state["simulation_speed"] = self.simulation_speed
         with open(self.STATE_FILE, "w") as f:
             json.dump(state, f)
-        logging.info(f"Desk Manager state saved to {self.STATE_FILE}.")
+        logger.info(f"Desk Manager state saved to {self.STATE_FILE}.")
 
     def load_state(self):
         """Load the state of desks and users from a JSON file, if it exists."""
@@ -227,8 +227,8 @@ class DeskManager:
                         desk.clock_s = desk_data["clock_s"]
                         self.desks[desk_id] = desk
                         self.users[desk_id] = self._create_user(desk, user_type)
-                    logging.info(f"Desk Manager state loaded from {self.STATE_FILE}")
+                    logger.info(f"Desk Manager state loaded from {self.STATE_FILE}")
                 except (json.JSONDecodeError, KeyError, ValueError) as e:
-                    logging.error(f"Failed to load state from {self.STATE_FILE}: {e}. Starting with default state.")
+                    logger.error(f"Failed to load state from {self.STATE_FILE}: {e}. Starting with default state.")
         else:
-            logging.warning(f"No state file found at {self.STATE_FILE}. Starting with default state.")
+            logger.warning(f"No state file found at {self.STATE_FILE}. Starting with default state.")
