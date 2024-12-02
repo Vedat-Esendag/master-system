@@ -16,10 +16,10 @@ export function Header() {
             Main Dashboard
           </Link>
           <Link 
-            href="/desk-management" 
+            href="/CustomizeTable" 
             className="px-4 py-2 bg-green-500 rounded-md hover:bg-green-600 transition-colors"
           >
-            Desk Management
+            Customize Table
           </Link>
           <SignedOut>
             <SignInButton />
