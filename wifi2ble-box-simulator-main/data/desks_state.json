@@ -107,7 +107,7 @@
                 "isPositionLost": false,
                 "isOverloadProtectionUp": false,
                 "isOverloadProtectionDown": false,
-                "isAntiCollision": true
+                "isAntiCollision": false
             },
             "usage": {
                 "activationsCounter": 37,
@@ -185,7 +185,7 @@
                 "isPositionLost": false,
                 "isOverloadProtectionUp": false,
                 "isOverloadProtectionDown": false,
-                "isAntiCollision": true
+                "isAntiCollision": false
             },
             "usage": {
                 "activationsCounter": 41,
@@ -291,7 +291,7 @@
                 "isPositionLost": false,
                 "isOverloadProtectionUp": false,
                 "isOverloadProtectionDown": false,
-                "isAntiCollision": true
+                "isAntiCollision": false
             },
             "usage": {
                 "activationsCounter": 40,

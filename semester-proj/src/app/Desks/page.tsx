@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { deskAPI, DeskData } from '@/lib/desk-api';
 import { ControlPanel } from '@/components/desk/control-panel';
 import StandingDesk from '@/components/standing-desk';
@@ -12,6 +12,7 @@ export default function DeskManagement() {
   const [loading, setLoading] = useState(true);
   const [loadingDeskData, setLoadingDeskData] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMoving, setIsMoving] = useState(false);
 
   useEffect(() => {
     loadDesks();
@@ -22,6 +23,35 @@ export default function DeskManagement() {
       loadDeskData(selectedDesk);
     }
   }, [selectedDesk]);
+
+  const pollDeskPosition = useCallback(async (deskId: string, targetPosition: number) => {
+    const MAX_ATTEMPTS = 30; // 30 seconds timeout
+    let attempts = 0;
+
+    const poll = async () => {
+      if (!deskId) return;
+      
+      const data = await deskAPI.getDeskData(deskId);
+      const currentPosition = data.state.position_mm;
+      
+      // Check if we're within 5mm of target (accounting for minor variations)
+      if (Math.abs(currentPosition - targetPosition) <= 5) {
+        setIsMoving(false);
+        setSelectedDeskData(data);
+        return;
+      }
+
+      if (attempts++ < MAX_ATTEMPTS) {
+        setTimeout(() => poll(), 1000); // Poll every second
+      } else {
+        setIsMoving(false);
+        console.warn('Desk movement timed out');
+      }
+    };
+
+    setIsMoving(true);
+    await poll();
+  }, []);
 
   async function loadDesks() {
     try {
@@ -70,6 +100,23 @@ export default function DeskManagement() {
       <div className="w-64 border-r bg-muted/20">
         <div className="p-4">
           <h2 className="font-semibold mb-4">Available Desks</h2>
+          <button
+            onClick={async () => {
+              try {
+                await deskAPI.raiseAllDesksToMax();
+                // Refresh the selected desk data after raising all desks
+                if (selectedDesk) {
+                  loadDeskData(selectedDesk);
+                }
+              } catch (error) {
+                setError('Failed to raise all desks');
+                console.error(error);
+              }
+            }}
+            className="w-full p-2 mb-4 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+          >
+            Raise All Desks
+          </button>
           <div className="space-y-2">
             {desks.map((deskId) => (
               <button
@@ -127,14 +174,16 @@ export default function DeskManagement() {
             {/* Control Panel */}
             <div className="p-4 border rounded-lg">
               <ControlPanel
-                deskId={selectedDesk}
+                deskId={selectedDesk!}
                 state={selectedDeskData.state}
+                isMoving={isMoving}
                 onUpdatePosition={async (position) => {
                   try {
-                    await deskAPI.updateDeskPosition(selectedDesk, position);
-                    await loadDeskData(selectedDesk);
+                    await deskAPI.updateDeskPosition(selectedDesk!, position);
+                    pollDeskPosition(selectedDesk!, position);
                   } catch (error) {
                     console.error('Failed to update position:', error);
+                    setIsMoving(false);
                   }
                 }}
               />

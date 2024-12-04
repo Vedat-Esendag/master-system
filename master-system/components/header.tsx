@@ -2,30 +2,54 @@
 
 import Link from "next/link";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 
 export function Header() {
+  const pathname = usePathname();
+
   return (
-    <header className="bg-slate-800 text-white p-4 shadow-lg">
+    <header className="bg-slate-800 text-white p-4 shadow-lg sticky top-0 z-50">
       <nav className="max-w-5xl mx-auto flex items-center justify-between">
-        <h1 className="text-xl font-bold">FlexiSpace</h1>
-        <div className="space-x-4">
+        <Link href="/" className="text-xl font-bold hover:text-blue-300 transition-colors">
+          FlexiSpace
+        </Link>
+        <div className="space-x-4 flex items-center">
           <Link 
             href="/MainDashboard" 
-            className="px-4 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+            className={`px-4 py-2 rounded-md transition-colors ${
+              pathname === '/main-dashboard'
+                ? 'bg-blue-600 text-white'
+                : 'bg-blue-500 hover:bg-blue-600'
+            }`}
           >
-            Main Dashboard
+            Dashboard
           </Link>
           <Link 
             href="/desk-management" 
-            className="px-4 py-2 bg-green-500 rounded-md hover:bg-green-600 transition-colors"
+            className={`px-4 py-2 rounded-md transition-colors ${
+              pathname === '/desk-management'
+                ? 'bg-green-600 text-white'
+                : 'bg-green-500 hover:bg-green-600'
+            }`}
           >
-            Desk Management
+            Desks
           </Link>
           <SignedOut>
-            <SignInButton />
+            <SignInButton mode="modal">
+              <button className="px-4 py-2 bg-white text-slate-800 rounded-md hover:bg-gray-100 transition-colors">
+                Sign In
+              </button>
+            </SignInButton>
           </SignedOut>
           <SignedIn>
-            <UserButton />
+            <UserButton 
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: "w-10 h-10"
+                }
+              }}
+            />
           </SignedIn>
         </div>
       </nav>

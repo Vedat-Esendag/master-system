@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeskState } from "@/lib/desk-api";
+import { Loader2 } from "lucide-react";
 
 interface ControlPanelProps {
   deskId: string;
   state: DeskState;
+  isMoving: boolean;
   onUpdatePosition: (position: number) => Promise<void>;
 }
 
-export function ControlPanel({ deskId, state, onUpdatePosition }: ControlPanelProps) {
+export function ControlPanel({ deskId, state, isMoving, onUpdatePosition }: ControlPanelProps) {
   const [targetPosition, setTargetPosition] = useState(state.position_mm);
-  const [isMoving, setIsMoving] = useState(false);
 
   const STEP_SIZE = 10; // mm
   const MIN_HEIGHT = 650; // mm
@@ -21,13 +22,10 @@ export function ControlPanel({ deskId, state, onUpdatePosition }: ControlPanelPr
     if (newPosition < MIN_HEIGHT || newPosition > MAX_HEIGHT) return;
     
     try {
-      setIsMoving(true);
       await onUpdatePosition(newPosition);
       setTargetPosition(newPosition);
     } catch (error) {
       console.error('Failed to move desk:', error);
-    } finally {
-      setIsMoving(false);
     }
   };
 
@@ -49,6 +47,15 @@ export function ControlPanel({ deskId, state, onUpdatePosition }: ControlPanelPr
           <p className="text-2xl font-semibold">{state.position_mm}mm</p>
         </div>
       </div>
+
+      {isMoving && (
+        <div className="flex items-center justify-center space-x-2 py-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <p className="text-sm text-muted-foreground">
+            Moving to {targetPosition}mm...
+          </p>
+        </div>
+      )}
 
       {/* Movement Controls */}
       <div className="flex space-x-2">

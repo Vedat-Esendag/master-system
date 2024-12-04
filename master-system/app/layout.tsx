@@ -2,6 +2,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Header } from "@/components/header";
+import RootLayoutClient from "@/components/root-layout-client";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,8 +21,9 @@ export default function RootLayout({
     <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html lang="en">
         <body className={inter.className}>
-          <Header />
-          {children}
+          <RootLayoutClient>
+            {children}
+          </RootLayoutClient>
         </body>
       </html>
     </ClerkProvider>

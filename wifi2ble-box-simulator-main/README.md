@@ -43,7 +43,7 @@ python simulator/main.py --desks 100
 **Speed:** To control speed of the clock simulation of the attached desks:
 
 ```bash
-python simulator/main.py --speed 60
+python simulator/main.py --speed 100
 ```
 - Option:
    - __--speed__: Simulation speed (default: 60)

@@ -72,6 +72,19 @@ class DeskAPI {
       throw error;
     }
   }
+
+  async raiseAllDesksToMax(): Promise<void> {
+    try {
+      const desks = await this.getAllDesks();
+      const MAX_HEIGHT_MM = 1270; // Standard max height for most standing desks
+      await Promise.all(
+        desks.map(deskId => this.updateDeskPosition(deskId, MAX_HEIGHT_MM))
+      );
+    } catch (error) {
+      console.error('Error raising all desks:', error);
+      throw error;
+    }
+  }
 }
 
 export const deskAPI = new DeskAPI();

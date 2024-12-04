@@ -8,41 +8,45 @@ import { useMemo, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 
 // Dynamically import heavy components
+const WeeklyActivityLoading = () => (
+  <Card>
+    <CardHeader>
+      <div className="h-6 w-32 bg-muted rounded" />
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex items-center space-x-4">
+            <div className="w-12 h-4 bg-muted rounded" />
+            <div className="flex-1 h-2.5 bg-muted rounded-full" />
+            <div className="w-20 h-4 bg-muted rounded" />
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const MonthlyStandingTrackerLoading = () => (
+  <Card className="mt-8 h-[300px] animate-pulse">
+    <CardHeader>
+      <div className="h-6 w-48 bg-muted rounded" />
+    </CardHeader>
+    <CardContent className="flex justify-center">
+      <div className="h-[200px] w-full max-w-xl bg-muted rounded" />
+    </CardContent>
+  </Card>
+);
+
 const MonthlyStandingTracker = dynamic(() => import('@/components/MonthlyStandingTracker'), {
   ssr: false,
-  loading: () => (
-    <Card className="mt-8 h-[300px] animate-pulse">
-      <CardHeader>
-        <div className="h-6 w-48 bg-muted rounded" />
-      </CardHeader>
-      <CardContent className="flex justify-center">
-        <div className="h-[200px] w-full max-w-xl bg-muted rounded" />
-      </CardContent>
-    </Card>
-  )
-})
+  loading: MonthlyStandingTrackerLoading
+});
 
 const WeeklyActivity = dynamic(() => import('@/components/WeeklyActivity'), {
   ssr: false,
-  loading: () => (
-    <Card>
-      <CardHeader>
-        <div className="h-6 w-32 bg-muted rounded" />
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center space-x-4">
-              <div className="w-12 h-4 bg-muted rounded" />
-              <div className="flex-1 h-2.5 bg-muted rounded-full" />
-              <div className="w-20 h-4 bg-muted rounded" />
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
-})
+  loading: WeeklyActivityLoading
+});
 
 export default function MainDashboard() {
   // Memoize data calculations
@@ -73,7 +77,7 @@ export default function MainDashboard() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Suspense fallback={<WeeklyActivity.loading />}>
+          <Suspense>
             <WeeklyActivity data={weeklyActivityData} />
           </Suspense>
 
@@ -132,7 +136,7 @@ export default function MainDashboard() {
           </Card>
         </div>
 
-        <Suspense fallback={<MonthlyStandingTracker.loading />}>
+        <Suspense>
           <MonthlyStandingTracker days={daysInMonth} />
         </Suspense>
       </main>
