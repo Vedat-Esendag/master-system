@@ -232,3 +232,16 @@ class DeskManager:
                     logger.error(f"Failed to load state from {self.STATE_FILE}: {e}. Starting with default state.")
         else:
             logger.warning(f"No state file found at {self.STATE_FILE}. Starting with default state.")
+
+    def move_desks_based_on_light(self, light_intensity):
+        """Move all desks up when light intensity is above 10%."""
+        logger.info(f"Checking light intensity: {light_intensity}%")
+        if light_intensity > 10:
+            with self.lock:
+                for desk_id, desk in self.desks.items():
+                    if desk_id not in self.powered_off_desks:
+                        current_position = desk.state.get('position_mm', 0)
+                        max_height = desk.config.get('max_height_mm', 1200)  # default max height if not set
+                        if current_position < max_height:
+                            desk.state['position_mm'] = max_height
+                            logger.info(f"Moving desk {desk_id} up to {max_height}mm due to high light intensity")
