@@ -89,6 +89,20 @@ export default function Home() {
   if (!isLoaded || !user) {
     return <RedirectToSignIn />;
   }
+  console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log("Supabase Key:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+  const testSupabase = async () => {
+    const { data, error } = await supabase.from("users").select("*").limit(1);
+    if (error) {
+      console.error("Supabase test query error:", error);
+    } else {
+      console.log("Supabase test query result:", data);
+    }
+  };
+
+  testSupabase();
+  console.log({ user, isLoaded });
   console.log(supabase);
   return (
     <div className="min-h-screen bg-gray-50">
