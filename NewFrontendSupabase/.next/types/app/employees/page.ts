@@ -1,4 +1,4 @@
-// File: /Users/frederikhandberg/Downloads/deskly-trek-activity-log-main/src/app/employees/page.tsx
+// File: /Users/frederikhandberg/Desktop/master-system/NewFrontendSupabase/src/app/employees/page.tsx
 import * as entry from '../../../../src/app/employees/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
