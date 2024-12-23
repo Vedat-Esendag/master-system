@@ -1,40 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export function Header() {
-  const pathname = usePathname();
-
   return (
-    <header className="bg-slate-800 text-white p-4 shadow-lg sticky top-0 z-50">
-      <nav className="max-w-5xl mx-auto flex items-center justify-between">
-        <div className="flex-1 text-xl font-bold tracking-wide">
+    <header className="bg-slate-800 p-4">
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <Link href="/" className="text-white text-xl font-semibold">
           FlexiSpace
-        </div>
+        </Link>
+        
         <div className="flex items-center gap-4">
           <Link 
             href="/Dashboard" 
-            className={`px-4 py-2 rounded-md transition-colors ${
-              pathname === '/Dashboard'
-                ? 'bg-blue-600 text-white'
-                : 'bg-blue-500 hover:bg-blue-600'
-            }`}
+            className="text-white bg-[#4c82f6] px-4 py-2 rounded-md hover:bg-blue-600"
           >
             Dashboard
           </Link>
           <Link 
             href="/Desks" 
-            className={`px-4 py-2 rounded-md transition-colors ${
-              pathname === '/Desks'
-                ? 'bg-green-600 text-white'
-                : 'bg-green-500 hover:bg-green-600'
-            }`}
+            className="text-white bg-[#4ade80] px-4 py-2 rounded-md hover:bg-green-600"
           >
             Desks
           </Link>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton afterSignOutUrl="/"/>
+          </SignedIn>
         </div>
-      </nav>
+      </div>
     </header>
   );
 }
