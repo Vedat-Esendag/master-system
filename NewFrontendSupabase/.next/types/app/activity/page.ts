@@ -1,4 +1,4 @@
-// File: /Users/frederikhandberg/Desktop/master-system/NewFrontendSupabase/src/app/activity/page.tsx
+// File: C:\Users\admin\Desktop\SDU\S3\Semester Project\Project\master-system\NewFrontendSupabase\src\app\activity\page.tsx
 import * as entry from '../../../../src/app/activity/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

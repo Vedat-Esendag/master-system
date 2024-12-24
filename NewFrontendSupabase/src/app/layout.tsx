@@ -1,11 +1,8 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import { Providers } from './providers'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Deskly Trek Activity Log',
-  description: 'Track your activities with Deskly Trek',
-}
+import './globals.css'
+import { ClerkProvider, SignIn, SignedIn, SignedOut, UserButton, RedirectToSignIn } from '@clerk/nextjs'
+import { Providers } from './providers'
 
 export default function RootLayout({
   children,
@@ -13,10 +10,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          <SignedOut>
+            {/* Redirect to Clerk's default sign-in page */}
+            <RedirectToSignIn />
+          </SignedOut>
+          <SignedIn>
+            <header style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
+              <UserButton />
+            </header>
+            <Providers>{children}</Providers>
+          </SignedIn>
+        </body>
+      </html>
+    </ClerkProvider>
   )
-} 
+}
