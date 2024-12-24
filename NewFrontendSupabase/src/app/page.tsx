@@ -1,6 +1,5 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WeeklyActivityChart } from '@/components/WeeklyActivityChart'
@@ -29,7 +28,6 @@ interface StandingDistribution {
 }
 
 export default function Home() {
-  const { user } = useUser()
   const [employeeCount, setEmployeeCount] = useState<number>(0)
   const [activeDesks, setActiveDesks] = useState<number>(0)
   const [averageStandingTime, setAverageStandingTime] = useState<number>(0)
@@ -72,14 +70,7 @@ export default function Home() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          {user && (
-            <p className="text-muted-foreground mt-1">
-              Welcome back, {user.firstName || user.username}!
-            </p>
-          )}
-        </div>
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
