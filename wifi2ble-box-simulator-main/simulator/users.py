@@ -32,7 +32,7 @@ class SeatedUser(UserBehavior):
     
     def simulate(self, time_delta_s):
         if self.desk.state["position_mm"] > self.preffered_position:
-            logger.info(f"SeatedUser adjusting desk {self.desk.desk_id} to seated position {self.preferred_position}.")
+            logger.info(f"SeatedUser adjusting desk {self.desk.desk_id} to seated position {self.preffered_position}.")
             self.desk.set_target_position(self.preffered_position)
 
 class StandingUser(UserBehavior):
@@ -46,7 +46,7 @@ class StandingUser(UserBehavior):
 
     def simulate(self, time_delta_s):
         if self.desk.state["position_mm"] < self.preffered_position:
-            logger.info(f"StandingUser adjusting desk {self.desk.desk_id} to standing position {self.preferred_position}.")
+            logger.info(f"StandingUser adjusting desk {self.desk.desk_id} to standing position {self.preffered_position}.")
             self.desk.set_target_position(self.preffered_position)
 
 class ActiveUser(UserBehavior):

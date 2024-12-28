@@ -3,10 +3,11 @@ import time
 import struct
 from desk_manager import DeskManager
 
-server_host = "192.168.50.176"  # Change this to the server's IP address
+server_host = "192.168.97.123"  # Change this to the server's IP address
 server_port = 4242      # Use the port number the server is listening on
 # Create a socket object
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Add this function before the main connection logic
 def send_test_message(socket, message):
@@ -33,6 +34,7 @@ def receive_message(socket):
 
 # Modify the connection part to include test message
 client_socket.connect((server_host, server_port))
+client_socket2.connect(("127.0.0.1", 4243))
 print(f"Connected to server {server_host}:{server_port}")
 
 # Send initial handshake
@@ -64,6 +66,7 @@ try:
         # Try to receive structured data
         try:
             msg = client_socket.recv(28)
+            #msg = client_socket2.recv()
             if len(msg) == 28:  # If we received the expected structured data
                 btn_state, pressed, pressed_since_last, potentiometer, light_intensity, temp, humidity = struct.unpack("<BxxxIIffff", msg)
                 
@@ -81,6 +84,8 @@ try:
                             light_value = float(message.split(":")[1].strip().replace("%", ""))
                             if light_value > 10.00:
                                 print(f"Light intensity is {light_value}%, moving desks up")
+                                t = 'Light: ' + str(light_value) + '%'
+                                client_socket2.send(t.encode())
                                 desk_manager.move_desks_based_on_light(light_value)
                         except (ValueError, IndexError) as e:
                             print(f"Error parsing light intensity: {e}")

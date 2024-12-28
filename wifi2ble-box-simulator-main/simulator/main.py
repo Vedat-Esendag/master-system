@@ -2,25 +2,32 @@ import argparse
 import ssl
 import random
 import logging
+import socket
 from http.server import HTTPServer
 from users import UserType
 from desk_manager import DeskManager
 from simple_rest_server import SimpleRESTServer
 
+MAIN_SERVER_HOST = "127.0.0.1"
+MAIN_SERVER_PORT = 4243
+
 def process_light_sensor_data(data):
     """Simulate desk actions based on light sensor data."""
     print(f"Processing light sensor data: {data}")
     # Implement your logic here (e.g., adjust desk lighting)
-    if float(data) > 20:
-        print("It's dark! Adjusting desk settings accordingly.")
-    else:
-        print("idk.")
+    if data.startswith("light:", ):
+        lv= float(data[len('light:'):])
+        if lv < 20:
+            print("It's dark! Adjusting desk settings accordingly.")
+        else:
+            print("do nothing")
 
 def main_server():
     """TCP server to receive data from the light sensor server."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         server_socket.bind((MAIN_SERVER_HOST, MAIN_SERVER_PORT))
         server_socket.listen(5)
+
         print(f"Main Server running on {MAIN_SERVER_HOST}:{MAIN_SERVER_PORT}")
         
         while True:
