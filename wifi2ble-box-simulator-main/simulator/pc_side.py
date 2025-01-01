@@ -82,7 +82,7 @@ try:
                         print(f"success", {message})
                         try:
                             light_value = float(message.split(":")[1].strip().replace("%", ""))
-                            if light_value > 10.00:
+                            if light_value > 20.00:
                                 print(f"Light intensity is {light_value}%, moving desks up")
                                 t = 'Light: ' + str(light_value) + '%'
                                 client_socket2.send(t.encode())
