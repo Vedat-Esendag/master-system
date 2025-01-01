@@ -56,7 +56,7 @@ class Desk:
             logger.info(f"Desk target position set: ID={self.desk_id}, Requested={position_mm}, Accepted={self.target_position_mm}")
             if position_mm != self.state["position_mm"]:
                 self.usage["activationsCounter"] += 1
-                logger.info(f"Desk activated: ID={self.desk_id}, ActivationCounter={self.usage["activationsCounter"]}")
+                logger.info(f"Desk activated: ID={self.desk_id}, ActivationCounter={self.usage['activationsCounter']}")
 
     def _generate_error(self):
         """Generate an error during movement."""
